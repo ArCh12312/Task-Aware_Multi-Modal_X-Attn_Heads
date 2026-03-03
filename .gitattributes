@@ -1,0 +1,2 @@
+Iemocap_Embeddings/** filter=lfs diff=lfs merge=lfs -text
+my_custom_model/customBERT.bin filter=lfs diff=lfs merge=lfs -text
