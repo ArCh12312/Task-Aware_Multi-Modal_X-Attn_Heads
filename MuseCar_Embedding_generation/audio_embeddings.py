@@ -25,7 +25,6 @@ class HuBERTFeatureExtractor:
                 waveform, orig_freq=sample_rate, new_freq=self.sample_rate
             )
 
-        # Convert to mono if needed
         if waveform.shape[0] > 1:
             waveform = torch.mean(waveform, dim=0, keepdim=True)
 
@@ -52,7 +51,7 @@ class HuBERTFeatureExtractor:
         return sampled_embeddings
 
 def main():
-    base_data_path = "C:/Users/aryan/Documents/Study/Research/MuseCar_Classification/c2_muse_sent/audio_segments"   # <-- path to your single audio folder
+    base_data_path = "C:/Users/aryan/Documents/Study/Research/MuseCar_Classification/c2_muse_sent/audio_segments" 
     output_path = "D:\c2_muse_sent\Audio_output_512_HuBERT"
 
     os.makedirs(output_path, exist_ok=True)

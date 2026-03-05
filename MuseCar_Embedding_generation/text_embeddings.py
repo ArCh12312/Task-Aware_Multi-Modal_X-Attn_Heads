@@ -7,11 +7,6 @@ from transformers import BertTokenizer, BertModel
 
 class BERTTextFeatureExtractor:
     def __init__(self, model_name="bert-base-uncased", output_dim=768, target_length=128):
-        """
-        - Truncate transcripts to 512 tokens (BERT max).
-        - Extract all token embeddings (seq_len ≤ 512).
-        - Downsample or pad to (128, 768).
-        """
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -28,7 +23,6 @@ class BERTTextFeatureExtractor:
             print("Warning: Empty transcript. Returning zeros.")
             return np.zeros((512, self.output_dim), dtype=np.float32)
 
-        # Force exactly 512 tokens
         inputs = self.tokenizer(
             text,
             return_tensors="pt",
@@ -46,7 +40,7 @@ class BERTTextFeatureExtractor:
         return hidden_states.astype(np.float32)
     
 def main():
-    input_dir = "C:/Users/aryan/Documents/Study/Research/MuseCar_Classification/c2_muse_sent/transcription_segments1"   # Folder with 1.csv, 2.csv, ...
+    input_dir = "C:/Users/aryan/Documents/Study/Research/MuseCar_Classification/c2_muse_sent/transcription_segments1"
     output_dir = "D:\c2_muse_sent\Text_Embeddings_512"
     os.makedirs(output_dir, exist_ok=True)
 
@@ -66,13 +60,12 @@ def main():
 
             for idx, row in enumerate(reader, start=1):
                 text = row["transcript"].strip()
-                if not text:  # skip empty rows
+                if not text:
                     print(f"Skipping empty row in video {file_name}, scene {idx}")
                     continue
 
                 features = extractor.extract_features(text)
 
-          # should always be (128, 768)
                 output_path = os.path.join(output_dir, f"{file_name}_scene{idx}.npy")
                 np.save(output_path, features)
                 print(f"Saved {output_path} (shape={features.shape})")

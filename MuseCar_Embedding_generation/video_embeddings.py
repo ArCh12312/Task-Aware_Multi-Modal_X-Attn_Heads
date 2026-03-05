@@ -152,12 +152,12 @@ class DinoV2FeatureExtractor:
         print("All videos processed.")
 
 def main():
-    data_path = "D:/c2_muse_sent/videos"   # <-- your single videos folder
+    data_path = "D:/c2_muse_sent/videos" 
     output_path = "D:\c2_muse_sent\Video_output_512_DINOv2"
     transcript_dir="C:/Users/aryan/Documents/Study/Research/MuseCar_Classification/c2_muse_sent/transcription_segments1"
 
-    num_frames = 8          # 8 frames
-    frame_rate = 5          # sample every 5th frame
+    num_frames = 8          
+    frame_rate = 5          
 
     print(f"Input path: {data_path}")
     print(f"Output path: {output_path}")
