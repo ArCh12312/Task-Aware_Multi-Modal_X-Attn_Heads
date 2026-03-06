@@ -152,7 +152,7 @@ class DinoV2FeatureExtractor:
         print("All videos processed.")
 
 def main():
-    data_path = "D:/c2_muse_sent/videos" 
+    data_path = "MuseCar_Sent/videos" 
     output_path = "D:\c2_muse_sent\Video_output_512_DINOv2"
     transcript_dir="C:/Users/aryan/Documents/Study/Research/MuseCar_Classification/c2_muse_sent/transcription_segments1"
 

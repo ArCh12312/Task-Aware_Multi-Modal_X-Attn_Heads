@@ -41,7 +41,7 @@ class BERTTextFeatureExtractor:
     
 def main():
     input_dir = "C:/Users/aryan/Documents/Study/Research/MuseCar_Classification/c2_muse_sent/transcription_segments1"
-    output_dir = "D:\c2_muse_sent\Text_Embeddings_512"
+    output_dir = "D:\c2_muse_sent\Text_output_512_BERT"
     os.makedirs(output_dir, exist_ok=True)
 
     extractor = BERTTextFeatureExtractor()
@@ -53,7 +53,7 @@ def main():
 
     for i, transcript_file in enumerate(transcript_files):
         file_name = os.path.basename(transcript_file).split('.')[0]
-        print(f"\n=== Processing video {file_name} ===")
+        print(f"\n=== Processing csv {file_name} ===")
 
         with open(transcript_file, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)

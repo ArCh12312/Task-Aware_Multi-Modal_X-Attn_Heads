@@ -3,11 +3,16 @@ import pandas as pd
 from glob import glob
 
 transcript_directory = "c2_muse_sent/transcription_segments"
+output_directory = "c2_muse_sent/aggregated_transcripts"
+os.makedirs(output_directory, exist_ok=True)
 no_of_videos = 303
 
 for i in range(no_of_videos):
     subdirectory = os.path.join(transcript_directory, str(i))
-    csv_files = sorted(glob(os.path.join(subdirectory, "*.csv")))
+    csv_files = sorted(
+        glob(os.path.join(subdirectory, "*.csv")),
+        key=lambda x: int(os.path.basename(x).split("_")[1].split(".")[0])
+    )
 
     if not csv_files:
         print(f"No CSV files found in {subdirectory}")
@@ -38,6 +43,6 @@ for i in range(no_of_videos):
             print(f"Error reading {csv_file}: {e}")
 
     # Save aggregated results for this subdirectory
-    output_file = os.path.join(transcript_directory, f"{i}.csv")
+    output_file = os.path.join(output_directory, f"{i}.csv")
     full_df.to_csv(output_file, index=False)
     print(f"Saved aggregated transcript to {output_file}")

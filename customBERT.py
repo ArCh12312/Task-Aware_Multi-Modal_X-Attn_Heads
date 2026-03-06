@@ -450,10 +450,10 @@ class BertXLayer(nn.Module):
         return layer_output
 
 # -------------------------------------------------
-# Full BERT
+# Full BERT (Single-Task)
 # -------------------------------------------------
 
-class CustomBertModel(nn.Module):
+class CustomBertSTL(nn.Module):
     def __init__(self, config):
         super().__init__()
 
@@ -494,3 +494,53 @@ class CustomBertModel(nn.Module):
         logits = self.classifier(pooled_output)
 
         return logits
+
+# -------------------------------------------------
+# Full BERT (Multi-Task)
+# -------------------------------------------------
+
+class CustomBertMTL(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+
+        self.embeddings = BertEmbeddings(config)
+        self.subspace_proj = TripleSubspaceProjection()
+
+        self.encoder = nn.ModuleDict({
+            "layer": nn.ModuleList([
+                BertLayer0(config) if i == 0
+                else BertLayer(config) if i <= 4
+                else BertXLayer(config)
+                for i in range(config.num_hidden_layers)
+            ])
+        })
+
+        self.pooler = nn.ModuleDict({
+            "dense": BlockDiagonalLinear(config.hidden_size, config.hidden_size, block_size=256)
+        })
+        self.pooler_activation = nn.Tanh()
+
+        self.arousal_head = nn.Linear(config.hidden_size, 3)
+        self.valence_head = nn.Linear(config.hidden_size, 3)
+        self.topic_head = nn.Linear(config.hidden_size, 10)
+
+    def forward(self, input_embeds1, input_embeds2, input_embeds3):
+
+        input_embeds1, input_embeds2, input_embeds3 = self.embeddings(input_embeds1, input_embeds2, input_embeds3)
+        residual_stream = self.subspace_proj(input_embeds1, input_embeds2, input_embeds3)
+
+        hidden_states = self.encoder["layer"][0](input_embeds1, input_embeds2, input_embeds3, residual_stream)
+
+        for layer_module in self.encoder["layer"][1:]:
+            hidden_states = layer_module(hidden_states)
+
+        cls_token = hidden_states.mean(dim=1)
+        pooled_output = self.pooler_activation(
+            self.pooler["dense"](cls_token)
+        )
+
+        arousal_logits = self.arousal_head(pooled_output)
+        valence_logits = self.valence_head(pooled_output)
+        topic_logits = self.topic_head(pooled_output)
+
+        return arousal_logits, valence_logits, topic_logits
