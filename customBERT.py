@@ -523,6 +523,8 @@ class CustomBertMTL(nn.Module):
         self.arousal_head = nn.Linear(config.hidden_size, 3)
         self.valence_head = nn.Linear(config.hidden_size, 3)
         self.topic_head = nn.Linear(config.hidden_size, 10)
+        
+        self.last_pooled = None
 
     def forward(self, input_embeds1, input_embeds2, input_embeds3):
 
@@ -538,6 +540,7 @@ class CustomBertMTL(nn.Module):
         pooled_output = self.pooler_activation(
             self.pooler["dense"](cls_token)
         )
+        self.last_pooled = pooled_output # Saved for later experiments:)
 
         arousal_logits = self.arousal_head(pooled_output)
         valence_logits = self.valence_head(pooled_output)
